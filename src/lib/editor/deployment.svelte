@@ -1,6 +1,6 @@
 <script lang="ts">
     export let onChanged: (manifest: Deployment) => void;
-    import type { Deployment } from "./types";
+    import { DefaultPodSpec, type Deployment } from "./types";
 
     import Metadata from "./metadata.svelte";
 
@@ -8,6 +8,7 @@
     import SelectInput from "../SelectInput.svelte";
     import NumberOrPortionInput from "../NumberOrPortionInput.svelte";
     import Toggle from "../Toggle.svelte";
+    import Podspec from "./podspec.svelte";
 
     export let manifest: Deployment = {
         kind: "Deployment",
@@ -27,7 +28,7 @@
                 metadata: {
                     labels: {},
                 },
-                spec: {},
+                spec: DefaultPodSpec,
             },
             strategy: {
                 type: "RollingUpdate",
@@ -103,4 +104,7 @@
             bind:Value={manifest.spec.strategy.rollingUpdate.MaxSurge}
         />
     {/if}
+
+    <h3 class="text-2xl">PodTemplate</h3>
+    <Podspec />
 </div>

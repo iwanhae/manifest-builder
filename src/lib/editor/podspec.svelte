@@ -1,28 +1,37 @@
 <script lang="ts">
-    import type { Metadata } from "./types";
+    import { DefaultPodSpec, type Metadata, type PodSpec } from "./types";
 
     import TextInput from "../TextInput.svelte";
+    import Container from "./container.svelte";
+    import SelectInput from "../SelectInput.svelte";
+    import NumberInput from "../NumberInput.svelte";
 
-    export let onChanged: (manifest: Metadata) => void = () => {};
-    export let manifest: Metadata = {
-        name: "example",
-        namespace: "default",
-        labels: {},
-        annotations: {},
-    };
+    export let onChanged: (manifest: PodSpec) => void = () => {};
+    export let manifest: PodSpec = DefaultPodSpec;
 
-    $: if (onChanged != null) onChanged(manifest);
+    $: onChanged(manifest);
 </script>
 
 <div class="grid justify-items-center gap-5">
-    <TextInput
-        Label="Name"
-        bind:Value={manifest.name}
-        Description="put your app name here"
+    <h3 class="text-l">General</h3>
+    <SelectInput
+        Label="Restart Policy"
+        Options={["Always", "OnFailure", "Never"]}
+        bind:Value={manifest.restartPolicy}
     />
-    <TextInput
-        Label="Namespace"
-        bind:Value={manifest.namespace}
-        Description="put your app namespace here"
+    <SelectInput
+        Label="DNS Policy"
+        Options={["ClusterFirst", "ClusterFirstWithHostNet", "Default", "None"]}
+        bind:Value={manifest.dnsPolicy}
     />
+    <NumberInput
+        Label="TerminationGracePeriodSeconds"
+        min={0}
+        bind:Value={manifest.terminationGracePeriodSeconds}
+    />
+    <h3 class="text-l">InitContainers</h3>
+    <Container />
+    <h3 class="text-l">Containers</h3>
+    <Container />
+    <h3 class="text-l">Volumes</h3>
 </div>

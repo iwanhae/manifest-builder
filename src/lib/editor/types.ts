@@ -67,12 +67,7 @@ export const DefaultContainer: Container = {
     imagePullPolicy: "IfNotPresent"
 }
 
-export const DefaultPodSpec: PodSpec = {
-    containers: [DefaultContainer],
-    restartPolicy: "Always",
-    dnsPolicy: "ClusterFirst",
-    terminationGracePeriodSeconds: 30,
-}
+
 
 export type Container = {
     name: string
@@ -116,4 +111,48 @@ export type VolumeMount = {
     readOnly: boolean
     mountPath: string
     subPath: string
+}
+
+
+export const DefaultPodSpec: PodSpec = {
+    initContainers: [],
+    containers: [DefaultContainer],
+    restartPolicy: "Always",
+    dnsPolicy: "ClusterFirst",
+    terminationGracePeriodSeconds: 30,
+}
+export const DefaultDeploymentSpec: DeploymentSpec = {
+    replicas: 1,
+    selector: {
+        matchLabels: {},
+    },
+    template: {
+        metadata: {
+            labels: {},
+        },
+        spec: DefaultPodSpec,
+    },
+    strategy: {
+        type: "RollingUpdate",
+        rollingUpdate: {
+            MaxSurge: "25%",
+            MaxUnavailable: "25%",
+        },
+    },
+    minReadySeconds: 0,
+    revisionHistoryLimit: 10,
+    progressDeadlineSeconds: 600,
+    paused: false,
+}
+
+export const DefaultDeployment: Deployment = {
+    kind: "Deployment",
+    apiVersion: "apps/v1",
+    metadata: {
+        name: "example",
+        namespace: "default",
+        labels: {},
+        annotations: {},
+    },
+    spec: DefaultDeploymentSpec,
 }

@@ -1,15 +1,12 @@
 <script lang="ts">
-    import { DefaultPodSpec, type Metadata, type PodSpec } from "./types";
+    import { DefaultPodSpec, type PodSpec } from "./types";
 
     import TextInput from "../TextInput.svelte";
-    import Container from "./container.svelte";
+    import ContainerList from "./container_list.svelte";
     import SelectInput from "../SelectInput.svelte";
     import NumberInput from "../NumberInput.svelte";
 
-    export let onChanged: (manifest: PodSpec) => void = () => {};
     export let manifest: PodSpec = DefaultPodSpec;
-
-    $: onChanged(manifest);
 </script>
 
 <div class="grid justify-items-center gap-5">
@@ -29,9 +26,11 @@
         min={0}
         bind:Value={manifest.terminationGracePeriodSeconds}
     />
-    <h3 class="text-l">InitContainers</h3>
-    <Container />
-    <h3 class="text-l">Containers</h3>
-    <Container />
+    <h3 class="text-l">Container Spec</h3>
+    <ContainerList
+        title="InitContainers"
+        bind:manifest={manifest.initContainers}
+    />
+    <ContainerList title="Containers" bind:manifest={manifest.containers} />
     <h3 class="text-l">Volumes</h3>
 </div>

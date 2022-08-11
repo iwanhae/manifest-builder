@@ -1,14 +1,7 @@
 <script lang="ts">
-    export let onChanged: (manifest: Deployment) => void;
-    import { DefaultPodSpec, type Deployment } from "./types";
-
+    import { DefaultDeploymentSpec, type Deployment } from "./types";
     import Metadata from "./metadata.svelte";
-
-    import NumberInput from "../NumberInput.svelte";
-    import SelectInput from "../SelectInput.svelte";
-    import NumberOrPortionInput from "../NumberOrPortionInput.svelte";
-    import Toggle from "../Toggle.svelte";
-    import Podspec from "./podspec.svelte";
+    import DeploymentSpec from "./deployment_spec.svelte";
 
     export let manifest: Deployment = {
         kind: "Deployment",
@@ -19,29 +12,7 @@
             labels: {},
             annotations: {},
         },
-        spec: {
-            replicas: 1,
-            selector: {
-                matchLabels: {},
-            },
-            template: {
-                metadata: {
-                    labels: {},
-                },
-                spec: DefaultPodSpec,
-            },
-            strategy: {
-                type: "RollingUpdate",
-                rollingUpdate: {
-                    MaxSurge: "25%",
-                    MaxUnavailable: "25%",
-                },
-            },
-            minReadySeconds: 0,
-            revisionHistoryLimit: 10,
-            progressDeadlineSeconds: 600,
-            paused: false,
-        },
+        spec: DefaultDeploymentSpec,
     };
 
     function CompleteManifest(manifest: Deployment): Deployment {
@@ -61,7 +32,7 @@
         return show;
     }
 
-    $: onChanged(CompleteManifest(manifest));
+    $: manifest = CompleteManifest(manifest);
 </script>
 
 <div class="grid justify-items-center gap-5">
@@ -69,42 +40,5 @@
     <Metadata bind:manifest={manifest.metadata} />
 
     <h3 class="text-2xl">Spec</h3>
-    <h3 class="text-l">General</h3>
-    <NumberInput Label="Replicas" bind:Value={manifest.spec.replicas} min={0} />
-    <NumberInput
-        Label="Minimal Ready Seconds"
-        bind:Value={manifest.spec.minReadySeconds}
-        min={0}
-    />
-    <NumberInput
-        Label="Progress Deadline Seconds"
-        bind:Value={manifest.spec.progressDeadlineSeconds}
-        min={0}
-    />
-    <NumberInput
-        Label="Revision History Limits"
-        bind:Value={manifest.spec.revisionHistoryLimit}
-        min={0}
-    />
-    <Toggle Label="Should Paused" bind:Value={manifest.spec.paused} />
-
-    <h3 class="text-l">Strategy</h3>
-    <SelectInput
-        Label="StrategyType"
-        bind:Value={manifest.spec.strategy.type}
-        Options={["Recreate", "RollingUpdate"]}
-    />
-    {#if manifest.spec.strategy.type == "RollingUpdate"}
-        <NumberOrPortionInput
-            Label="MaxUnavailable"
-            bind:Value={manifest.spec.strategy.rollingUpdate.MaxUnavailable}
-        />
-        <NumberOrPortionInput
-            Label="MaxSurge"
-            bind:Value={manifest.spec.strategy.rollingUpdate.MaxSurge}
-        />
-    {/if}
-
-    <h3 class="text-2xl">PodTemplate</h3>
-    <Podspec />
+    <DeploymentSpec bind:manifest={manifest.spec} />
 </div>
